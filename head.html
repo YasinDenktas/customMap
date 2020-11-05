@@ -1,0 +1,194 @@
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+ <title>Google Maps Multiple Markers</title>
+ <script src="https://maps.googleapis.com/maps/api/js?key=YOURAPIKEY&callback=initMap"
+ defer type="text/javascript"></script>
+<script type="text/javascript">
+
+let map;
+detail = 'detailcreche', //Où afficher l'item de la collection
+elementsName = "cr-che-ouverte w-dyn-item", //L'élément parent
+nomName = 'h3-cr-che',
+markerTypeName = 'h3-map-pin',
+gmaplink = "gmaplink",
+zoomMax = 15,
+mapId = 'map',
+dateName = 'date';
+
+/** @const {RegExp} */ // Obtenir la lattitude et longitude d'un lien google map
+var mapLinkRegex = new RegExp('@(.*),(.*),');
+var icons = {
+  1:'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+  0:'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+}
+
+/**
+* Renvoie la latitude et longitude à partir d'un Regex appliquée à un URL
+* @param {string} mapLink - L'URL dont on extrait la latitude et la longitude
+* @param (RegExp) regex
+*/
+function getLatLon(mapLink, regex = mapLinkRegex){
+  if(mapLink == "" || mapLink == null, mapLink == false){
+    return false
+  } else {
+    var lon_lat_match = mapLink.match(regex)
+    if(lon_lat_match == null){
+      return false
+    } else {
+      return {lat:parseFloat(lon_lat_match[1]),
+        lon:parseFloat(lon_lat_match[2])}
+    }
+  }
+}
+/**
+* Renvoie le nom contenu dans une classe
+* @param {string} className - La class dont on prend la balise contenant le nom
+* @param {HTML} context - Le périmètre de recherche de chaque localisation
+* @return (HTML) nom
+*/
+function getNom(className, context = document){
+  var enoms = context.getElementsByClassName(className);
+  if(enoms.length != 1){
+    return false
+  } else {
+    return enoms[0].innerHTML
+  }
+}
+/**
+* @param {html} element - La balise dont le contenu est à récupérer
+*/
+function createElink(element){
+  return element.innerHTML}
+/**
+* @param {html} context - Le périmètre de recherche de chaque localisation
+* @param {string} className - La class à appliquer à la balise
+* @param {string} nom - Le nom du marker, à afficher
+* @return {HTML} - Marker, cf : API Google Map
+*/
+function createMarker(element, className, nom){
+
+  marker = document.createElement("a");
+  h3 = document.createElement('h3');
+  marker.href = element.children[0].href;
+  h3.appendChild(document.createTextNode(nom));
+  h3.className = className;
+  h3.innerHTML = nom;
+  marker.appendChild(h3);
+  marker = marker.outerHTML;
+  return marker
+}
+function getIcon(icons, className, context = document){
+  var icon,
+  key = context.getElementsByClassName(className)[0].innerHTML.length;
+  if(key != 0){key = 1}
+  return icons[key]
+}
+/**
+Renvoie la liste des localisations détenue dans une balise className
+* @param {string} className - La class où se trouve chaque localisation
+* @param {html} [context=document] - Le périmètre de recherche de chaque localisation
+* {Array<Array<>>} locations - Chaque
+* @property {number} locations.avgLat - Lattitude moyenne des locations
+* @property {number} locations.avgLon - longitude moyenne des locations
+* @property {Object} locations.bounds - Limites de la map, cf : API Google Map
+* {number} location.lat - Latitude
+* {number} location.lon - Longitude
+* {string} location.href - Lien vers la localisation
+* {Object} location.marker - Marker, cf : API Google Map
+* {HTML} location.elink - Balise HTML à afficher lorsque la localisation est sélectionnée
+* {string} location.icon - Link to a public icon to display as a marker
+* @return {Array} locations
+*/
+function getLocations(className, context = document){
+	var bounds = new google.maps.LatLngBounds(),
+	locations = Array(),
+	i,
+	elements = context.getElementsByClassName(className);
+
+	for (i = 0; i < elements.length; i++){
+		var element = elements[i],
+    maplink = element.getElementsByClassName(gmaplink)[0].innerHTML
+    // Obtenir la lattitudes et longitudes du lien google map en suivant la regex
+    var latLon = getLatLon(maplink, mapLinkRegex);
+    if(latLon == false){continue}
+    lat = latLon['lat']
+    lon = latLon['lon']
+    // Obtenir le nom de la localisation
+    var nom = getNom(nomName, element);
+    if(nom == false){continue}
+    // Créer le marker
+    var marker = createMarker(element, markerTypeName, nom),
+    href = marker['href'],
+    elink = createElink(element),
+    icon = getIcon(icons, className = dateName, context = element);
+
+// Stocker les informations dans un objet pour itérer
+    locations.push({lat:lat,
+      lon:lon,
+      marker:marker,
+      elink:elink,
+      href:href,
+      icon:icon});
+			bounds.extend({lat: lat, lng:lon});
+	}
+	locations.avgLat = avgArray(locations, 'lat');
+	locations.avgLon = avgArray(locations, 'lon');
+	locations.bounds = bounds;
+	return locations
+}
+/**
+* Moyenne arithmétique d'une dimension de la matrice
+* @param {Array} array la matrice
+* @param {string} attr La dimension
+* @return {Float} La moyenne
+*/
+function avgArray(array, attr){
+	if(array.length == 0){return 0}
+	var sum = array.reduce(function(prev, cur){
+		return prev + cur[attr];
+	},0);
+	return sum / array.length
+}
+
+
+function initMap(){
+	var locations = getLocations(elementsName);
+
+    var map = new google.maps.Map(document.getElementById(mapId), {
+      center: new google.maps.LatLng(locations.avgLat, locations.avgLon),
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    });
+
+
+    var infowindow = new google.maps.InfoWindow();
+    var marker, i;
+
+    for (i = 0; i < locations.length; i++) {
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(locations[i].lat, locations[i].lon),
+        map: map,
+        icon: {url: locations[i].icon},
+        title:locations[i].marker,
+      });
+
+
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          document.getElementById(detail).innerHTML = locations[i].elink;
+          infowindow.setContent(locations[i].marker);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    }
+		// fit map
+		google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
+			this.setZoom(map.getZoom()-1);
+			if (this.getZoom() > zoomMax) {
+				this.setZoom(zoomMax);
+			}
+			});
+		map.fitBounds(locations.bounds);
+  }
+initMap()
+
+</script>
