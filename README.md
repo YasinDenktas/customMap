@@ -1,6 +1,6 @@
 ## **Pourquoi un custom map ?**
 
-Webflow offre la possibilité d'[intégrer des maps](https://university.webflow.com/lesson/map) simplement Mais on est vite limité. On ne peut pas intégrer plusieurs endroits, ni personnaliser les marqueurs ou afficher quelque chose au clic. Pour palier à cela, j'ai créé un EMBED HTML à intégrer dans le HEAD de la page Webflow.
+Webflow offre la possibilité d'[intégrer des maps](https://university.webflow.com/lesson/map) simplement mais on est vite limité. On ne peut pas intégrer plusieurs endroits, ni personnaliser les marqueurs ou ajouter des évènements DOM. Pour palier à cela, j'ai créé un EMBED HTML à intégrer dans le HEAD de la page Webflow.
 
 ## **Comment utiliser la customMap ?**
 
@@ -17,7 +17,7 @@ Webflow offre la possibilité d'[intégrer des maps](https://university.webflow.
     - gmaplink
         - A configurer comme sur le fichier "champ-google-map.png" et à cacher à l'écran
 5. Cacher la COLLECTION LIST nouvellement créé
-    - Mettre en forme l'élémentIl sera affiché tel quel tant qu'aucun marqueur ne sera cliqué
+    - Mettre en forme l'élément. Il sera affiché tel quel tant qu'aucun marqueur ne sera cliqué
 6. Copier / coller le code du fichier head.html dans le de la page webflow concerné
 7. Copier / coller le code du fichier map.html dans un élément EMBED HTML sur la page webflow concerné
     - Bien sûr, vous pouvez modifier le nom des classes. Pensez à les modifier dans le code <head.html>
