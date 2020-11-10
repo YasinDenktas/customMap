@@ -5,7 +5,7 @@
 <script type="text/javascript">
 
 let map;
-detail = 'detailcreche', //Où afficher l'item de la collection
+detail = 'detailcreche',
 elementsName = "cr-che-ouverte w-dyn-item", //L'élément parent
 nomName = 'h3-cr-che',
 markerTypeName = 'h3-map-pin',
@@ -20,7 +20,6 @@ var icons = {
   1:'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
   0:'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
 }
-
 /**
 * Renvoie la latitude et longitude à partir d'un Regex appliquée à un URL
 * @param {string} mapLink - L'URL dont on extrait la latitude et la longitude
@@ -148,8 +147,6 @@ function avgArray(array, attr){
 	},0);
 	return sum / array.length
 }
-
-
 function initMap(){
 	var locations = getLocations(elementsName);
 
